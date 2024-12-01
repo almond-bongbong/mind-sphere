@@ -7,40 +7,85 @@ interface Dummy {
   depth: number; // 1 ~ 5
   similarity: number; // 0 ~ 100
   category: number; // 1 ~ 10
+  isUser?: boolean;
 }
 
-const DUMMY_DATA: Dummy[] = range(1000).map(() => ({
+const CATEGORY_COUNT = 10;
+
+const BACKGROUND_DATA: Dummy[] = range(1000).map(() => ({
   depth: random(1, 5),
   similarity: random(0, 100),
-  category: random(0, 9),
+  category: random(0, CATEGORY_COUNT - 1),
 }));
 
-function Stars() {
-  // 포인트의 위치 생성
-  const positions = useMemo(() => {
-    const posArray: number[] = [];
+const USER_DATA: Dummy[] = range(5).map(() => ({
+  depth: random(1, 5),
+  similarity: random(0, 100),
+  category: 0,
+  isUser: true,
+}));
 
-    DUMMY_DATA.forEach((item) => {
-      // 카테고리와 깊이에 따라 각도 계산
-      const phi = ((item.category + Math.random()) / 10) * Math.PI * 2;
-      const theta = ((item.depth + Math.random()) / 5) * Math.PI;
+const ALL_DATA = [...BACKGROUND_DATA, ...USER_DATA];
+
+function Stars() {
+  // 포인트의 위치, 크기, 색상, 기본 크기 생성
+  const [positions, sizes, colors, baseSizes] = useMemo(() => {
+    const posArray: number[] = [];
+    const sizeArray: number[] = [];
+    const colorArray: number[] = [];
+    const baseSizeArray: number[] = [];
+
+    const totalCategories = 10; // 카테고리 수
+
+    ALL_DATA.forEach((item) => {
+      // 카테고리에 따른 phi 범위 계산
+      const categoryIndex = item.category; // 0부터 9까지
+      const phiMin = (categoryIndex / totalCategories) * 2 * Math.PI;
+      const phiMax = ((categoryIndex + 1) / totalCategories) * 2 * Math.PI;
+
+      // phi를 해당 범위 내에서 랜덤하게 선택
+      const phi = Math.random() * (phiMax - phiMin) + phiMin;
+
+      // theta는 [0, π] 범위에서 균일한 난수로 선택
+      const theta = Math.acos(Math.random() * 2 - 1); // [0, π]
 
       const radius = 1; // 구의 반지름
 
       // 구면 좌표를 직교 좌표로 변환
-      const x = radius * Math.sin(theta) * Math.cos(phi);
-      const y = radius * Math.sin(theta) * Math.sin(phi);
-      const z = radius * Math.cos(theta);
+      let x = radius * Math.sin(theta) * Math.cos(phi);
+      let y = radius * Math.sin(theta) * Math.sin(phi);
+      let z = radius * Math.cos(theta);
 
-      posArray.push(x, y, z);
+      // X축을 기준으로 -90도 회전 적용 (적도가 카메라 방향과 평행하도록)
+      const rotatedX = x;
+      const rotatedY = z;
+      const rotatedZ = -y;
+
+      posArray.push(rotatedX, rotatedY, rotatedZ);
+
+      // 기본 크기 설정
+      const baseSize = item.isUser ? 0.1 : 0.03; // USER_DATA는 더 크게
+      baseSizeArray.push(baseSize);
+
+      // 초기 크기는 baseSize로 설정
+      sizeArray.push(baseSize);
+
+      // 색상 설정 (RGB)
+      if (item.isUser) {
+        // 파란색 (USER_DATA)
+        colorArray.push(0.0, 0.0, 1.0);
+      } else {
+        // 흰색 (BACKGROUND_DATA)
+        colorArray.push(1.0, 1.0, 1.0);
+      }
     });
 
-    return new Float32Array(posArray);
-  }, []);
-
-  // 포인트 크기를 위한 sizes 속성 초기화
-  const sizes = useMemo(() => {
-    return new Float32Array(DUMMY_DATA.length).fill(0.02);
+    return [
+      new Float32Array(posArray),
+      new Float32Array(sizeArray),
+      new Float32Array(colorArray),
+      new Float32Array(baseSizeArray),
+    ];
   }, []);
 
   // 지오메트리 생성 및 속성 설정
@@ -48,8 +93,13 @@ function Stars() {
     const geom = new THREE.BufferGeometry();
     geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geom.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    // baseSize 속성 추가
+    geom.setAttribute('baseSize', new THREE.BufferAttribute(baseSizes, 1));
+
     return geom;
-  }, [positions, sizes]);
+  }, [positions, sizes, colors, baseSizes]);
 
   // 포인트 객체에 대한 참조
   const pointsRef = useRef<THREE.Points>(null);
@@ -58,18 +108,51 @@ function Stars() {
   useFrame(({ clock }) => {
     if (pointsRef.current) {
       const time = clock.getElapsedTime();
+
       // sizes 속성에 접근
       const sizesAttribute = pointsRef.current.geometry.getAttribute(
         'size'
       ) as THREE.BufferAttribute;
+      const baseSizesAttribute = pointsRef.current.geometry.getAttribute(
+        'baseSize'
+      ) as THREE.BufferAttribute;
+
       const sizeArray = sizesAttribute.array as Float32Array;
+      const baseSizeArray = baseSizesAttribute.array as Float32Array;
 
       for (let i = 0; i < sizeArray.length; i++) {
-        sizeArray[i] = 0.02 + 0.015 * Math.sin(0.5 * time + i);
+        const baseSize = baseSizeArray[i]; // 각 포인트의 기본 크기
+        sizeArray[i] = baseSize + 0.01 * Math.sin(1 * time + i);
       }
+
       sizesAttribute.needsUpdate = true;
     }
   });
+
+  // 버텍스 셰이더
+  const vertexShader = `
+    attribute float size;
+    attribute vec3 color;
+    varying vec3 vColor;
+
+    void main() {
+      vColor = color;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (300.0 / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `;
+
+  // 프래그먼트 셰이더
+  const fragmentShader = `
+    varying vec3 vColor;
+
+    void main() {
+      float distanceToCenter = length(gl_PointCoord - vec2(0.5));
+      float alpha = smoothstep(0.5, 0.0, distanceToCenter);
+      gl_FragColor = vec4(vColor, alpha);
+    }
+  `;
 
   return (
     <points ref={pointsRef} geometry={geometry}>
@@ -84,29 +167,5 @@ function Stars() {
     </points>
   );
 }
-
-// 버텍스 셰이더
-const vertexShader = `
-  attribute float size;
-  varying vec3 vColor;
-
-  void main() {
-    vColor = vec3(1.0);
-    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = size * (300.0 / -mvPosition.z);
-    gl_Position = projectionMatrix * mvPosition;
-  }
-`;
-
-// 프래그먼트 셰이더
-const fragmentShader = `
-  varying vec3 vColor;
-
-  void main() {
-    float distanceToCenter = length(gl_PointCoord - vec2(0.5));
-    float alpha = smoothstep(0.5, 0.0, distanceToCenter);
-    gl_FragColor = vec4(vColor, alpha);
-  }
-`;
 
 export default Stars;

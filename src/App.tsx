@@ -3,7 +3,7 @@ import SphereSpace from './components/sphere-space';
 
 function App() {
   return (
-    <div className="canvas_container">
+    <div className="app">
       <SphereSpace />
     </div>
   );
