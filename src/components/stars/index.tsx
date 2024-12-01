@@ -21,7 +21,7 @@ const BACKGROUND_DATA: Dummy[] = range(1000).map(() => ({
 const USER_DATA: Dummy[] = range(5).map(() => ({
   depth: random(1, 5),
   similarity: random(0, 100),
-  category: 0,
+  category: random(0, CATEGORY_COUNT - 1),
   isUser: true,
 }));
 
@@ -40,11 +40,25 @@ function Stars() {
     ALL_DATA.forEach((item) => {
       // 카테고리에 따른 phi 범위 계산
       const categoryIndex = item.category; // 0부터 9까지
-      const phiMin = (categoryIndex / totalCategories) * 2 * Math.PI;
-      const phiMax = ((categoryIndex + 1) / totalCategories) * 2 * Math.PI;
+      const overlap = ((2 * Math.PI) / totalCategories) * 0.01; // 각 카테고리 간 1% 겹침
+      let phiMin = (categoryIndex / totalCategories) * 2 * Math.PI - overlap;
+      let phiMax =
+        ((categoryIndex + 1) / totalCategories) * 2 * Math.PI + overlap;
+
+      // phi 값을 0에서 2π 사이로 보정
+      phiMin = (phiMin + 2 * Math.PI) % (2 * Math.PI);
+      phiMax = (phiMax + 2 * Math.PI) % (2 * Math.PI);
+
+      // phi 범위가 역전된 경우 처리 (예: phiMin > phiMax)
+      if (phiMin > phiMax) {
+        phiMax += 2 * Math.PI;
+      }
 
       // phi를 해당 범위 내에서 랜덤하게 선택
-      const phi = Math.random() * (phiMax - phiMin) + phiMin;
+      let phi = Math.random() * (phiMax - phiMin) + phiMin;
+
+      // phi 값을 0에서 2π 사이로 보정
+      phi = (phi + 2 * Math.PI) % (2 * Math.PI);
 
       // theta는 [0, π] 범위에서 균일한 난수로 선택
       const theta = Math.acos(Math.random() * 2 - 1); // [0, π]
@@ -52,9 +66,9 @@ function Stars() {
       const radius = 1; // 구의 반지름
 
       // 구면 좌표를 직교 좌표로 변환
-      let x = radius * Math.sin(theta) * Math.cos(phi);
-      let y = radius * Math.sin(theta) * Math.sin(phi);
-      let z = radius * Math.cos(theta);
+      const x = radius * Math.sin(theta) * Math.cos(phi);
+      const y = radius * Math.sin(theta) * Math.sin(phi);
+      const z = radius * Math.cos(theta);
 
       // X축을 기준으로 -90도 회전 적용 (적도가 카메라 방향과 평행하도록)
       const rotatedX = x;
