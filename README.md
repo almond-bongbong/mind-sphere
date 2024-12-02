@@ -1,46 +1,65 @@
-# 3D 인터랙티브 별자리 시각화 (Interactive Stellar Visualization)
+# 🌟 StarSphere
 
-![프로젝트 스크린샷 또는 GIF]
+A dynamic 3D visualization of categorized data points on a rotating sphere using Three.js and React Three Fiber.
 
-## 🌟 프로젝트 소개
+<p align="center">
+  <img src="https://raw.githubusercontent.com/almond-bongbong/mind-sphere/main/docs/preview.gif" alt="StarSphere Demo" />
+</p>
 
-이 프로젝트는 Three.js와 React를 활용하여 만든 인터랙티브 3D 별자리 시각화 시스템입니다. 데이터를 아름다운 3차원 구면 공간에 매핑하여 직관적이고 몰입감 있는 시각화 경험을 제공합니다.
+## 🌌 Overview
 
-## ✨ 주요 기능
+**StarSphere** is an interactive 3D visualization that represents data categories as points distributed across a sphere. Each category occupies a specific longitudinal segment, allowing for clear visual differentiation. The points, or "stars," shimmer and rotate, creating a captivating and immersive experience.
 
-- **3D 인터랙티브 시각화**: 사용자가 자유롭게 회전하고 줌인/아웃할 수 있는 3D 공간
-- **동적 별 표현**: 실시간으로 반짝이는 효과를 가진 별들
-- **데이터 기반 시각화**: 깊이(depth), 유사도(similarity), 카테고리(category) 기반의 데이터 매핑
-- **커스텀 셰이더**: GLSL을 활용한 부드러운 별 렌더링
+## ✨ Features
 
-## 🛠 기술 스택
+- 🗂 **Categorical Segmentation**: Data points are organized by category, each assigned to a specific longitudinal section of the sphere.
+- 🌠 **Dynamic Animation**: Stars gently twinkle and pulsate, enhancing the visual appeal.
+- 🎮 **Interactive Controls**: Users can rotate, zoom, and pan the sphere. After a period of inactivity, the sphere auto-rotates smoothly.
+- 🎨 **Custom Shaders**: Utilizes custom GLSL shaders for advanced rendering effects.
+- 📱 **Responsive Design**: Adapts to different screen sizes, adjusting camera settings for optimal viewing.
 
-- React
-- Three.js
-- React Three Fiber
-- React Three Drei
-- TypeScript
-- GLSL Shaders
+## 🚀 Installation
 
-## 🚀 설치 및 실행
+1. **Clone the repository**
 
 ```bash
-# 저장소 클론
-git clone [repository-url]
-
-# 종속성 설치
-npm install
-
-# 개발 서버 실행
-npm run dev
+git clone https://github.com/yourusername/StarSphere.git
+cd StarSphere
 ```
 
-## 🎮 사용 방법
+2. **Install dependencies**
 
-- **회전**: 마우스 드래그로 뷰를 회전
-- **줌**: 마우스 휠로 확대/축소
-- **이동**: 마우스 우클릭 드래그로 뷰 이동
+```bash
+npm install
+```
 
-## 📝 라이선스
+3. **Start the development server**
 
-MIT License
+```bash
+npm start
+```
+
+The application will be available at `http://localhost:3000`.
+
+## 🖱 Usage
+
+- 🔄 **Rotate the Sphere**: Click and drag to manually rotate the sphere.
+- 🔍 **Zoom In/Out**: Use the mouse wheel or pinch gestures.
+- ⏳ **Auto-Rotate**: If no interaction occurs for 2 seconds, the sphere will begin to auto-rotate.
+
+## 🛠 Technologies Used
+
+- ⚛️ **React**: A JavaScript library for building user interfaces.
+- 🌐 **Three.js**: A 3D JavaScript library for rendering graphics.
+- 🎯 **React Three Fiber**: React renderer for Three.js.
+- 📝 **TypeScript**: A typed superset of JavaScript.
+- ✒️ **GLSL Shaders**: Custom vertex and fragment shaders for rendering effects.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- 💡 Inspired by the beauty of celestial spheres and data visualization techniques.
+- 👏 Thanks to the developers of Three.js and React Three Fiber for their powerful tools.

@@ -87,7 +87,7 @@ function Stars() {
       // 색상 설정 (RGB)
       if (item.isUser) {
         // 파란색 (USER_DATA)
-        colorArray.push(0.0, 0.0, 1.0);
+        colorArray.push(0.3, 0.5, 1.0);
       } else {
         // 흰색 (BACKGROUND_DATA)
         colorArray.push(1.0, 1.0, 1.0);

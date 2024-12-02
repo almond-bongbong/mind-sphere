@@ -2,7 +2,15 @@
   "name": "mind-sphere",
   "private": true,
   "version": "0.0.0",
+  "description": "A dynamic 3D visualization of categorized data points on a rotating sphere using Three.js and React Three Fiber.",
   "type": "module",
+  "homepage": "https://github.com/almond-bongbong/mind-sphere",
+  "license": "MIT",
+  "author": "almond-bongbong",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almond-bongbong/mind-sphere.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
