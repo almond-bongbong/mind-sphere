@@ -27,8 +27,8 @@ Experience **StarSphere** in action: [Live Demo](https://almond-bongbong.github.
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/StarSphere.git
-cd StarSphere
+git clone https://github.com/almond-bongbong/mind-sphere.git
+cd mind-sphere
 ```
 
 2. **Install dependencies**

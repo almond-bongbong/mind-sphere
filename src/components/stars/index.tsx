@@ -38,29 +38,43 @@ function Stars() {
     const totalCategories = 10; // 카테고리 수
 
     ALL_DATA.forEach((item) => {
-      // 카테고리에 따른 phi 범위 계산
       const categoryIndex = item.category; // 0부터 9까지
-      const overlap = ((2 * Math.PI) / totalCategories) * 0.01; // 각 카테고리 간 1% 겹침
-      let phiMin = (categoryIndex / totalCategories) * 2 * Math.PI - overlap;
-      let phiMax =
-        ((categoryIndex + 1) / totalCategories) * 2 * Math.PI + overlap;
 
-      // phi 값을 0에서 2π 사이로 보정
+      const totalCategories = 10;
+      const categoryWidth = (2 * Math.PI) / totalCategories;
+      const overlap = categoryWidth * 0.01; // 각 카테고리 간 1% 겹침
+
+      let phiMin = categoryIndex * categoryWidth - overlap;
+      let phiMax = (categoryIndex + 1) * categoryWidth + overlap;
+
+      // phiMin과 phiMax를 [0, 2π) 범위로 조정
       phiMin = (phiMin + 2 * Math.PI) % (2 * Math.PI);
       phiMax = (phiMax + 2 * Math.PI) % (2 * Math.PI);
 
-      // phi 범위가 역전된 경우 처리 (예: phiMin > phiMax)
-      if (phiMin > phiMax) {
-        phiMax += 2 * Math.PI;
+      let phi: number;
+
+      if (phiMin < phiMax) {
+        // phiMin이 phiMax보다 작은 경우 (범위가 연속적임)
+        phi = Math.random() * (phiMax - phiMin) + phiMin;
+      } else {
+        // phiMin이 phiMax보다 큰 경우 (범위가 0을 넘어감)
+        // 두 부분으로 나눠서 처리
+        const range1 = 2 * Math.PI - phiMin;
+        const range2 = phiMax;
+        const totalRange = range1 + range2;
+
+        const rand = Math.random() * totalRange;
+        if (rand < range1) {
+          phi = phiMin + rand;
+        } else {
+          phi = rand - range1;
+        }
       }
 
-      // phi를 해당 범위 내에서 랜덤하게 선택
-      let phi = Math.random() * (phiMax - phiMin) + phiMin;
-
-      // phi 값을 0에서 2π 사이로 보정
+      // phi 값을 [0, 2π) 범위로 조정
       phi = (phi + 2 * Math.PI) % (2 * Math.PI);
 
-      // theta는 [0, π] 범위에서 균일한 난수로 선택
+      // theta는 [0, π] 범위에서 균등한 난수로 선택
       const theta = Math.acos(Math.random() * 2 - 1); // [0, π]
 
       const radius = 1; // 구의 반지름
