@@ -14,7 +14,7 @@ A dynamic 3D visualization of categorized data points on a rotating sphere using
 
 - 🗂 **Categorical Segmentation**: Data points are organized by category, each assigned to a specific longitudinal section of the sphere.
 - 🌠 **Dynamic Animation**: Stars gently twinkle and pulsate, enhancing the visual appeal.
-- 🎮 **Interactive Controls**: Users can rotate, zoom, and pan the sphere. After a period of inactivity, the sphere auto-rotates smoothly.
+- 🎮 **Interactive Controls**: Users can rotate, zoom, and pan the sphere.
 - 🎨 **Custom Shaders**: Utilizes custom GLSL shaders for advanced rendering effects.
 - 📱 **Responsive Design**: Adapts to different screen sizes, adjusting camera settings for optimal viewing.
 
