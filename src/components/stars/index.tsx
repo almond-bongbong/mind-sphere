@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { random, range } from 'es-toolkit';
+import { random, randomInt, range } from 'es-toolkit';
 
 interface Dummy {
   depth: number; // 1 ~ 5
@@ -12,19 +12,22 @@ interface Dummy {
 
 const CATEGORY_COUNT = 10;
 
+// 배경 데이터
 const BACKGROUND_DATA: Dummy[] = range(1000).map(() => ({
   depth: random(1, 5),
   similarity: random(0, 100),
-  category: random(0, CATEGORY_COUNT - 1),
+  category: randomInt(0, CATEGORY_COUNT),
 }));
 
+// 유저 데이터
 const USER_DATA: Dummy[] = range(5).map(() => ({
   depth: random(1, 5),
   similarity: random(0, 100),
-  category: random(0, CATEGORY_COUNT - 1),
+  category: randomInt(0, CATEGORY_COUNT),
   isUser: true,
 }));
 
+// 모든 데이터
 const ALL_DATA = [...BACKGROUND_DATA, ...USER_DATA];
 
 function Stars() {
@@ -35,14 +38,11 @@ function Stars() {
     const colorArray: number[] = [];
     const baseSizeArray: number[] = [];
 
-    const totalCategories = 10; // 카테고리 수
-
     ALL_DATA.forEach((item) => {
       const categoryIndex = item.category; // 0부터 9까지
 
-      const totalCategories = 10;
-      const categoryWidth = (2 * Math.PI) / totalCategories;
-      const overlap = categoryWidth * 0.01; // 각 카테고리 간 1% 겹침
+      const categoryWidth = (2 * Math.PI) / CATEGORY_COUNT;
+      const overlap = categoryWidth * 0; // 각 카테고리 간 1% 겹침
 
       let phiMin = categoryIndex * categoryWidth - overlap;
       let phiMax = (categoryIndex + 1) * categoryWidth + overlap;
@@ -150,7 +150,18 @@ function Stars() {
 
       for (let i = 0; i < sizeArray.length; i++) {
         const baseSize = baseSizeArray[i]; // 각 포인트의 기본 크기
-        sizeArray[i] = baseSize + 0.01 * Math.sin(1 * time + i);
+
+        // 진동 주파수
+        const OSCILLATION_FREQUENCY = 1;
+
+        // 진동 진폭
+        const OSCILLATION_AMPLITUDE = 0.02;
+
+        // 포인트 크기 애니메이션
+        const oscillationValue =
+          OSCILLATION_AMPLITUDE * Math.sin(OSCILLATION_FREQUENCY * time + i);
+
+        sizeArray[i] = baseSize + oscillationValue;
       }
 
       sizesAttribute.needsUpdate = true;
