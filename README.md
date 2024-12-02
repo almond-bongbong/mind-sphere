@@ -18,6 +18,10 @@ A dynamic 3D visualization of categorized data points on a rotating sphere using
 - 🎨 **Custom Shaders**: Utilizes custom GLSL shaders for advanced rendering effects.
 - 📱 **Responsive Design**: Adapts to different screen sizes, adjusting camera settings for optimal viewing.
 
+## 🌐 Live Demo
+
+Experience **StarSphere** in action: [Live Demo](https://almond-bongbong.github.io/mind-sphere/)
+
 ## 🚀 Installation
 
 1. **Clone the repository**
