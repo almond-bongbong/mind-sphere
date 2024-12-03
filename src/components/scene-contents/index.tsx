@@ -52,7 +52,7 @@ function SceneContents() {
         autoRotateSpeed={0.5}
         touches={{
           ONE: THREE.TOUCH.ROTATE,
-          TWO: THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.DOLLY_ROTATE,
         }}
       />
     </>
