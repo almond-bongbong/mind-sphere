@@ -50,6 +50,10 @@ function SceneContents() {
         maxDistance={3}
         autoRotate
         autoRotateSpeed={0.5}
+        touches={{
+          ONE: THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.ROTATE,
+        }}
       />
     </>
   );
